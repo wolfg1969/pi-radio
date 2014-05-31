@@ -2,161 +2,47 @@
 
 import logging
 import os
-import signal
-import socket
 import sys
 import subprocess
-import thread
-import threading
-import time
-import SocketServer
-
-from daemon import Daemon
 from player import Player
 
 logging.basicConfig(filename="/tmp/douban-fmd.log", level=logging.DEBUG)
 
-server_logger = logging.getLogger('douban-fmd.server')
 
-music_pipe_r,music_pipe_w = os.pipe()
-fm_process = None
-play_stereo = True
-with open(os.devnull, "w") as dev_null:
-    fm_process = subprocess.Popen(["sudo", "/home/pi/piFm/new/pifm","-","76.6","44100", ], stdin=music_pipe_r, stdout=dev_null)
-
-class CmdHandler(SocketServer.StreamRequestHandler):
-
-    def handle(self):
-        # self.request is the TCP socket connected to the client
-        self.data = self.rfile.readline().strip()
-
-        server_logger.debug("cmd=%s" % self.data)
-
-        if not self.data:
-            return
-
-        cmd = self.data.split()
-        arg = None
-
-        if len(cmd) == 2:
-            arg = cmd[1]
-
-        cmd = cmd[0]
-
-        if cmd == "play":
-
-            self.request.sendall(self.server.player.play())
-
-        elif cmd == "stop":
-
-            self.server.player.stop()
-
-        elif cmd == "pause":
-
-            self.request.sendall(self.server.player.pause())
-
-        elif cmd == "toggle":
-
-            self.request.sendall(self.server.player.toggle())
-
-        elif cmd == "skip":
-
-            self.request.sendall(self.server.player.skip())
-
-        elif cmd == "ban":
-
-            self.request.sendall(self.server.player.ban())
-
-
-        elif cmd == "rate":
-
-            self.request.sendall(self.server.player.rate())
-
-        elif cmd == "unrate":
-
-            self.request.sendall(self.server.player.unrate())
-
-        elif cmd == "info":
-
-            self.request.sendall(self.server.player.info())
-
-        elif cmd == "setch":
-
-            if arg:
-                self.request.sendall(self.server.player.setch(int(arg)))
-
-            else:
-                self.request.sendall("invalid channel id")
-
-        #elif cmd == "end":
-        #    self.server.player.stop()
-        #    self.server.player.close()
-        #    self.server.running = False
-            
-        else:
-            server_logger.info("invalid command")
-
-
-class PlayerSocketServer(SocketServer.TCPServer):
-    address_family = socket.AF_INET
-    allow_reuse_address = True
-
-
-def init_player_server():
+def radio_on():
 
     import ConfigParser, os
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
 
     config = ConfigParser.ConfigParser()
-    config.readfp(open(os.path.expanduser("~/.fmd/fmd.conf")))
+    config.readfp(open(os.path.join(script_dir, "radio.conf")))
+    
+    frequency = config.get("PirateRadio", "frequency")  # in MHz, default is 76.6
+    play_stereo = config.getboolean("PirateRadio", "stereo_playback")
+    sample_rate = config.get("PirateRadio", "sample_rate")  # 22050 or 44100 Hz
+    
+    audio_pipe_r, audio_pipe_w = os.pipe()
+
+    fm_process = subprocess.Popen(["sudo", os.path.join(script_dir, "./pifm"), "-", frequency, sample_rate, "stereo" if play_stereo else ""],
+                                  stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
 
     player = Player(
-        long(config.get("DoubanFM", "uid")),
-        config.get("DoubanFM", "uname"),
-        config.get("DoubanFM", "token"),
-        long(config.get("DoubanFM", "expire")),
-        music_pipe_w
+        uid=long(config.get("DoubanFM", "uid")),
+        uname=config.get("DoubanFM", "uname"),
+        token=config.get("DoubanFM", "token"),
+        expire=long(config.get("DoubanFM", "expire")),
+        play_stereo=play_stereo,
+        sample_rate=sample_rate,
+        audio_pipe=audio_pipe_w
     )
     player.play()
 
-    signal.signal(signal.SIGUSR1, player.playNextSong)
-
-    HOST, PORT = "localhost", 8888
-
-    # Create the server, binding to localhost on port 8888
-    server = PlayerSocketServer((HOST, PORT), CmdHandler)
-    server.player = player
-
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    #server.serve_forever()
-
-    server.running = True
-
-    server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.start()
-
-    while server.running:
-        time.sleep(1)
-    
-    server_thread.join()
-
-
-
-class ServerDaemon(Daemon):
-
-    def run(self):
-        init_player_server()
-
-
 
 if __name__ == "__main__":
+    
+    fpid = os.fork()
+    if fpid != 0:
+        sys.exit(0)
 
-    daemon = ServerDaemon("/tmp/douban-fmd.pid")
-    daemon.start()
-
-
-
-
-
-
-
+    radio_on()

@@ -12,6 +12,7 @@ LOGIN_API_URL   = "http://www.douban.com/j/app/login"
 CHANNEL_API_URL = "http://www.douban.com/j/app/radio/channels"
 RADIO_API_URL   = "http://www.douban.com/j/app/radio/people"
 
+
 class ReportType:
 
     BAN     = 'b'   # 不再播放当前歌曲  [短报告]
@@ -22,16 +23,18 @@ class ReportType:
     RATE    = 'r'   # 为当前播放歌曲加红心    [短报告]
     UNRATE  = 'u'   # 取消当前歌曲的红心     [短报告]
 
+
 class RadioAPI:
 
-    def __init__(self, uid, uname, token, expire):
+    def __init__(self, uid, uname, token, expire, kbps):
     
-        self.logger = logging.getLogger('douban-fmd.api')
+        self.logger = logging.getLogger('douban-pi-radio.api')
 
         self.uid = uid
         self.uname = uname
         self.token = token
         self.expire = expire
+        self.kbps = kbps
 
         self.curl = pycurl.Curl()
         self.curl.setopt(pycurl.USERAGENT,
@@ -41,12 +44,11 @@ class RadioAPI:
         self.curl.setopt(pycurl.TIMEOUT, 30)
         self.curl.setopt(pycurl.VERBOSE, True)
 
-
     def sendLongReport(self, channel, songId, reportType, playHistory):
 
         buf = cStringIO.StringIO()
 
-        url = "%s?app_name=%s&version=%s&user_id=%d&expire=%d&token=%s&channel=%d&sid=%s&type=%c&h=%s&kbps=" % (
+        url = "%s?app_name=%s&version=%s&user_id=%d&expire=%d&token=%s&channel=%d&sid=%s&type=%c&h=%s&kbps=%s" % (
             RADIO_API_URL,
             APP_NAME,
             VERSION,
@@ -57,6 +59,7 @@ class RadioAPI:
             songId,
             reportType,
             self.__populateHistory(playHistory),
+            self.kbps,
         )
         
         self.logger.debug("api request url is %s" % url)
@@ -77,7 +80,6 @@ class RadioAPI:
             return json_obj['song']
         else:
             return []
-
 
     def sendShortReport(self, channel, songId, reportType):
 
@@ -106,7 +108,6 @@ class RadioAPI:
         
         buf.close()
         
-
     def __populateHistory(self, hisList):
 
         ret = []
@@ -114,26 +115,3 @@ class RadioAPI:
             ret.append("|%s:%s" % (his['sid'], his['type']))
 
         return "".join(ret)
-
-
-if __name__ == "__main__":
-
-    import ConfigParser, os
-
-    config = ConfigParser.ConfigParser()
-    config.readfp(open(os.path.expanduser("~/.fmd/fmd.conf")))
-
-    #print "uid =", config.get("DoubanFM", "uid")
-
-    api = RadioAPI(
-        long(config.get("DoubanFM", "uid")),
-        config.get("DoubanFM", "uname"),
-        config.get("DoubanFM", "token"),
-        long(config.get("DoubanFM", "expire"))
-    )
-
-    songList = api.sendLongReport(1, 1433383, ReportType.RATE, [])
-
-    print songList[0]['title']
-
-

@@ -11,4 +11,7 @@ Inspired by [hzqtc/fmd](http://hzqtc.github.io/fmd/) and [Make-Magazine/PirateRa
 * ffmpeg
 * python-cjson
 * python-pycurl
-
+* pifm
+```
+$ g++ -O3 -o pifm pifm.c
+```

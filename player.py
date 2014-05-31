@@ -16,11 +16,11 @@ class PlayerStatus:
 
 class Player:
 
-    def __init__(self, uid, uname, token, expire, kbps, play_stereo, sample_rate, audio_pipe):
+    def __init__(self, channel, uid, uname, token, expire, kbps, play_stereo, sample_rate, audio_pipe):
     
         self.logger = logging.getLogger('douban-pi-radio.player')
 
-        self.channel = 0
+        self.channel = channel
 
         self.radioAPI = RadioAPI(uid, uname, token, expire, kbps)
 

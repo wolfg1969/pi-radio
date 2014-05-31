@@ -28,6 +28,7 @@ def radio_on():
                                   stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
 
     player = Player(
+        channel=config.get("DoubanFM", "channel"),
         uid=long(config.get("DoubanFM", "uid")),
         uname=config.get("DoubanFM", "uname"),
         token=config.get("DoubanFM", "token"),

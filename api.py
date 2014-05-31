@@ -38,7 +38,7 @@ class RadioAPI:
 
         self.curl = pycurl.Curl()
         self.curl.setopt(pycurl.USERAGENT,
-            'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:8.0) Gecko/20100101 Firefox/8.0')
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36')
         self.curl.setopt(pycurl.ENCODING, "utf-8")
         self.curl.setopt(pycurl.CONNECTTIMEOUT, 30)
         self.curl.setopt(pycurl.TIMEOUT, 30)

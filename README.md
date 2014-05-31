@@ -18,6 +18,6 @@ $ g++ -O3 -o pifm pifm.c
 
 #### TODOs
 * [ ] Control commands
-* [ ] Socket server ?
-* [ ] Or web console ?
-* [ ] Get stereo playbakc work ?
+* [ ] Socket server?
+* [ ] Or web console?
+* [ ] Get stereo playback work?

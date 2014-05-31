@@ -15,3 +15,9 @@ Inspired by [hzqtc/fmd](http://hzqtc.github.io/fmd/) and [Make-Magazine/PirateRa
 ```
 $ g++ -O3 -o pifm pifm.c
 ```
+
+#### TODOs
+* [ ] Control commands
+* [ ] Socket server ?
+* [ ] Or web console ?
+* [ ] Get stereo playbakc work ?

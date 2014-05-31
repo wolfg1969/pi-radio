@@ -24,7 +24,7 @@ def radio_on():
     
     audio_pipe_r, audio_pipe_w = os.pipe()
 
-    fm_process = subprocess.Popen(["sudo", os.path.join(script_dir, "./pifm"), "-", frequency, sample_rate, "stereo" if play_stereo else ""],
+    fm_process = subprocess.Popen(["sudo", os.path.join(script_dir, "pifm"), "-", frequency, sample_rate, "stereo" if play_stereo else ""],
                                   stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
 
     player = Player(
@@ -32,6 +32,7 @@ def radio_on():
         uname=config.get("DoubanFM", "uname"),
         token=config.get("DoubanFM", "token"),
         expire=long(config.get("DoubanFM", "expire")),
+        kbps=config.get("DoubanFM", "kbps"),
         play_stereo=play_stereo,
         sample_rate=sample_rate,
         audio_pipe=audio_pipe_w

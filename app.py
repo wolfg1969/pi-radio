@@ -4,15 +4,16 @@ import logging
 import os
 import sys
 import subprocess
+from ConfigParser import ConfigParser
 
 
 logging.basicConfig(filename="/tmp/pi-radio.log", level=logging.DEBUG)
 
 
-def start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r):
+def start_pifm_proc(pi_fm_dir, frequency, sample_rate, play_stereo, audio_pipe_r):
     fm_process = subprocess.Popen([
                                       "sudo",
-                                      os.path.join(script_dir, "pifm"),
+                                      os.path.join(pi_fm_dir, "pifm"),
                                       "-",
                                       frequency,
                                       sample_rate,
@@ -30,12 +31,10 @@ def get_player_class(player_name):
     return getattr(player_mod, player_class_name)
 
 def radio_on():
-
-    import ConfigParser, os
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
-    config = ConfigParser.ConfigParser()
+    config = ConfigParser()
     config.readfp(open(os.path.join(script_dir, "radio.conf")))
     
     frequency = config.get("PirateRadio", "frequency")  # in MHz, default is 76.6
@@ -44,7 +43,7 @@ def radio_on():
     
     audio_pipe_r, audio_pipe_w = os.pipe()
 
-    #start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r)
+    start_pifm_proc(script_dir, frequency, sample_rate, play_stereo, audio_pipe_r)
     
     player_class = get_player_class(config.get('PirateRadio', 'radio_player'))
     player = player_class(config, audio_pipe_w)

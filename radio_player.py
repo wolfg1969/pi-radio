@@ -9,8 +9,11 @@ class RadioPlayer(object):
         self.config = config
         self.audio_pipe = audio_pipe
         
+    def play_next(self):
+        pass
+        
     def play(self):
         self.logger.info("play")
         while (True):  # TODO play forever now
-            self.__play()
+            self.play_next()
             time.sleep(1)

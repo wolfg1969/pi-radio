@@ -32,7 +32,7 @@ class DoubanFmPlayer(RadioPlayer):
         self.play_history = []
         self.current_song_index = -1
 
-    def __play(self):
+    def play_next(self):
         
         self.__get_next_song()
         

@@ -24,11 +24,11 @@ class ReportType:
     UNRATE  = 'u'   # 取消当前歌曲的红心     [短报告]
 
 
-class RadioAPI:
+class DoubanFmAPI:
 
     def __init__(self, uid, uname, token, expire, kbps):
     
-        self.logger = logging.getLogger('douban-pi-radio.api')
+        self.logger = logging.getLogger('douban-fm.api')
 
         self.uid = uid
         self.uname = uname
@@ -48,7 +48,7 @@ class RadioAPI:
 
         buf = cStringIO.StringIO()
 
-        url = "%s?app_name=%s&version=%s&user_id=%d&expire=%d&token=%s&channel=%d&sid=%s&type=%c&h=%s&kbps=%s" % (
+        url = "%s?app_name=%s&version=%s&user_id=%s&expire=%s&token=%s&channel=%s&sid=%s&type=%c&h=%s&kbps=%s" % (
             RADIO_API_URL,
             APP_NAME,
             VERSION,
@@ -83,7 +83,7 @@ class RadioAPI:
 
     def sendShortReport(self, channel, songId, reportType):
 
-        url = "%s?app_name=%s&version=%s&user_id=%d&expire=%d&token=%s&channel=%d&sid=%s&type=%c" % (
+        url = "%s?app_name=%s&version=%s&user_id=%s&expire=%s&token=%s&channel=%s&sid=%s&type=%c" % (
             RADIO_API_URL,
             APP_NAME,
             VERSION,

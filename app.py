@@ -4,10 +4,30 @@ import logging
 import os
 import sys
 import subprocess
-from player import Player
 
-logging.basicConfig(filename="/tmp/douban-fmd.log", level=logging.DEBUG)
 
+logging.basicConfig(filename="/tmp/pi-radio.log", level=logging.DEBUG)
+
+
+def start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r):
+    fm_process = subprocess.Popen([
+                                      "sudo",
+                                      os.path.join(script_dir, "pifm"),
+                                      "-",
+                                      frequency,
+                                      sample_rate,
+                                      "stereo" if play_stereo else ""
+                                  ],
+                                  stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
+
+
+def get_player_class(player_name):
+    
+    last_dot_index = player_name.rfind('.')
+    player_mod_name = player_name[:last_dot_index-1]
+    player_class_name = player_name[last_dot_index+1:]
+    player_mod = __import__(player_mod_name, fromlist=[player_class_name])
+    return getattr(player_mod, player_class_name)
 
 def radio_on():
 
@@ -24,21 +44,12 @@ def radio_on():
     
     audio_pipe_r, audio_pipe_w = os.pipe()
 
-    fm_process = subprocess.Popen(["sudo", os.path.join(script_dir, "pifm"), "-", frequency, sample_rate, "stereo" if play_stereo else ""],
-                                  stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
-
-    player = Player(
-        channel=config.get("DoubanFM", "channel"),
-        uid=long(config.get("DoubanFM", "uid")),
-        uname=config.get("DoubanFM", "uname"),
-        token=config.get("DoubanFM", "token"),
-        expire=long(config.get("DoubanFM", "expire")),
-        kbps=config.get("DoubanFM", "kbps"),
-        play_stereo=play_stereo,
-        sample_rate=sample_rate,
-        audio_pipe=audio_pipe_w
-    )
-    player.play()
+    #start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r)
+    
+    player_class = get_player_class(config.get('PirateRadio', 'radio_player'))
+    player = player_klass(config, audio_pipe_w)
+    print player
+    #player.play()
 
 
 if __name__ == "__main__":

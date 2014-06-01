@@ -24,7 +24,7 @@ def start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r):
 def get_player_class(player_name):
     
     last_dot_index = player_name.rfind('.')
-    player_mod_name = player_name[:last_dot_index-1]
+    player_mod_name = player_name[:last_dot_index]
     player_class_name = player_name[last_dot_index+1:]
     player_mod = __import__(player_mod_name, fromlist=[player_class_name])
     return getattr(player_mod, player_class_name)
@@ -47,9 +47,8 @@ def radio_on():
     #start_pifm_proc(frequency, sample_rate, play_stereo, audio_pipe_r)
     
     player_class = get_player_class(config.get('PirateRadio', 'radio_player'))
-    player = player_klass(config, audio_pipe_w)
-    print player
-    #player.play()
+    player = player_class(config, audio_pipe_w)
+    player.play()
 
 
 if __name__ == "__main__":

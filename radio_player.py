@@ -2,7 +2,7 @@ import logging
 import time
 
 
-class RadioPlayer:
+class RadioPlayer(object):
     
     def __init__(self, config, audio_pipe):
         self.logger = logging.getLogger('pi-radio.player')

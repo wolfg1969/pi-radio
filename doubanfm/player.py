@@ -4,7 +4,7 @@ import logging
 import os
 import subprocess
 import time
-from ..radio_player import RadioPlayer
+from radio_player import RadioPlayer
 from .api import DoubanFmAPI, ReportType
 
 
@@ -23,7 +23,7 @@ class DoubanFmPlayer(RadioPlayer):
         expire = self.config.get("DoubanFM", "expire")
         kbps = self.config.get("DoubanFM", "kbps")
 
-        self.radioAPI = RadioAPI(uid, uname, token, expire, kbps)
+        self.radioAPI = DoubanFmAPI(uid, uname, token, expire, kbps)
 
         self.play_stereo = self.config.getboolean("PirateRadio", "stereo_playback")
         self.sample_rate = self.config.get("PirateRadio", "sample_rate")

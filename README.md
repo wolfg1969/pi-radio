@@ -1,10 +1,10 @@
-# douban-pi-radio
+# pi-radio
 
-Listen to Douban FM with your radio!
+Listen to internet music (currently Douban FM) with your radio!
 
-douban-pi-radio = Douban (Raspberry) Pi(rate) Radio
+pi-radio = Raspberry Pi(rate) Radio
 
-Inspired by [hzqtc/fmd](http://hzqtc.github.io/fmd/) and [Make-Magazine/PirateRadio](https://github.com/Make-Magazine/PirateRadio)
+Inspired by [hzqtc/fmd](https://github.com/hzqtc/fmd) and [Make-Magazine/PirateRadio](https://github.com/Make-Magazine/PirateRadio)
 
 ## Requirements
 

@@ -11,15 +11,10 @@ logging.basicConfig(filename="/tmp/pi-radio.log", level=logging.DEBUG)
 
 
 def start_pifm_proc(pi_fm_dir, frequency, sample_rate, play_stereo, audio_pipe_r):
-    fm_process = subprocess.Popen([
-                                      "sudo",
-                                      os.path.join(pi_fm_dir, "pifm"),
-                                      "-",
-                                      frequency,
-                                      sample_rate,
-                                      "stereo" if play_stereo else ""
-                                  ],
-                                  stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
+    cmd = ["sudo", os.path.join(pi_fm_dir, "pifm"), "-", frequency, sample_rate]
+    if play_stereo:
+        cmd.append("stereo")
+    fm_process = subprocess.Popen(cmd, stdin=audio_pipe_r, stdout=open(os.devnull, "w"))
 
 
 def get_player_class(player_name):
@@ -30,7 +25,7 @@ def get_player_class(player_name):
     player_mod = __import__(player_mod_name, fromlist=[player_class_name])
     return getattr(player_mod, player_class_name)
 
-def radio_on():
+def on_air():
     
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,4 +51,4 @@ if __name__ == "__main__":
     if fpid != 0:
         sys.exit(0)
 
-    radio_on()
+    on_air()

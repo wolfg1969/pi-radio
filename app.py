@@ -30,7 +30,7 @@ def on_air():
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     config = ConfigParser()
-    config.readfp(open(os.path.join(script_dir, "radio.conf")))
+    config.readfp(open(os.path.expanduser("~/.pi-radio/radio.conf")))
     
     frequency = config.get("PirateRadio", "frequency")  # in MHz, default is 76.6
     play_stereo = config.getboolean("PirateRadio", "stereo_playback")

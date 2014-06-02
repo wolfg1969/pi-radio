@@ -8,7 +8,7 @@ Inspired by [hzqtc/fmd](http://hzqtc.github.io/fmd/) and [Make-Magazine/PirateRa
 
 ## Requirements
 
-* ffmpeg
+* avconv
 * python-cjson
 * python-pycurl
 * pifm

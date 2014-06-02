@@ -44,9 +44,9 @@ class DoubanFmPlayer(RadioPlayer):
             try:
                 subprocess.call(
                     [
-                        "/usr/bin/ffmpeg", "-i", song_url, 
-                        "-f", "s16le",
-                        "-acodec", "pcm_s16le",
+                        "/usr/bin/avconv", "-i", song_url, 
+                        "-f", "wav",
+                        # "-b", "128k",
                         "-ac", "2" if self.play_stereo else "1",
                         "-ar", self.sample_rate, "-"
                     ],

@@ -8,6 +8,14 @@ Inspired by [hzqtc/fmd](http://hzqtc.github.io/fmd/) and [Make-Magazine/PirateRa
 
 ## Requirements
 
+### Hardware
+
+- Raspberry Pi
+- a piece of wire
+- a FM radio receiver 
+
+### Software
+
 * avconv
 * python-cjson
 * python-pycurl
